@@ -1,4 +1,5 @@
 from flask import Blueprint, request
+from iteration_utilities import unique_everseen
 
 from .data.search_data import USERS
 
@@ -27,4 +28,18 @@ def search_users(args):
 
     # Implement search here!
 
-    return USERS
+    search_list = []
+
+    if "id" in args:
+        search_list.extend([user for user in USERS if user['id'] == args['id']])
+
+    if "name" in args:
+        search_list.extend([user for user in USERS if args['name'].lower() in user['name'].lower()])
+
+    if "age" in args:
+        search_list.extend([user for user in USERS if int(args['age'])-1 <= user['age'] <= int(args['age'])+1])
+
+    if "occupation" in args:
+        search_list.extend([user for user in USERS if args['occupation'].lower() in user['occupation'].lower()])
+    
+    return list(unique_everseen(search_list))
